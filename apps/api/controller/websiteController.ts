@@ -51,6 +51,7 @@ export const getWebsiteStatus = async (req: Request, res: Response) => {
       where: {
         id,
         userId: req.userId,
+        disabled: false,
       },
       include: {
         ticks: true,
@@ -89,6 +90,7 @@ export const getWebsites = async (req: Request, res: Response) => {
     const websites = await prismaClient.website.findMany({
       where: {
         userId,
+        disabled: false,
       },
     });
     res.status(200).json({
@@ -115,10 +117,13 @@ export const deleteWebsite = async (req: Request, res: Response) => {
       });
       return;
     }
-    const website = await prismaClient.website.delete({
+    const website = await prismaClient.website.update({
       where: {
         id,
         userId,
+      },
+      data: {
+        disabled: true,
       },
     });
     if (!website) {

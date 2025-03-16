@@ -23,6 +23,7 @@ model Website{
   userId String
   // user User @relation(fields:[userId],references:[id])
   ticks WebSiteTicks[]
+  disabled Boolean @default(false)
 }
 model Validator{
   id String @id @default(uuid())

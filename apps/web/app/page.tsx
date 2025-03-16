@@ -1,102 +1,219 @@
-import Image, { type ImageProps } from "next/image";
-import { Button } from "@repo/ui/button";
-import styles from "./page.module.css";
+"use client";
 
-type Props = Omit<ImageProps, "src"> & {
-  srcLight: string;
-  srcDark: string;
-};
-
-const ThemeImage = (props: Props) => {
-  const { srcLight, srcDark, ...rest } = props;
-
-  return (
-    <>
-      <Image {...rest} src={srcLight} className="imgLight" />
-      <Image {...rest} src={srcDark} className="imgDark" />
-    </>
-  );
-};
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import {
+  Globe2,
+  Activity,
+  Bell,
+  Shield,
+  Users,
+  ArrowRight,
+  Star,
+} from "lucide-react";
 
 export default function Home() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <ThemeImage
-          className={styles.logo}
-          srcLight="turborepo-dark.svg"
-          srcDark="turborepo-light.svg"
-          alt="Turborepo logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>apps/web/app/page.tsx</code>
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new/clone?demo-description=Learn+to+implement+a+monorepo+with+a+two+Next.js+sites+that+has+installed+three+local+packages.&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2F4K8ZISWAzJ8X1504ca0zmC%2F0b21a1c6246add355e55816278ef54bc%2FBasic.png&demo-title=Monorepo+with+Turborepo&demo-url=https%3A%2F%2Fexamples-basic-web.vercel.sh%2F&from=templates&project-name=Monorepo+with+Turborepo&repository-name=monorepo-turborepo&repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fturborepo%2Ftree%2Fmain%2Fexamples%2Fbasic&root-directory=apps%2Fdocs&skippable-integrations=1&teamSlug=vercel&utm_source=create-turbo"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://turbo.build/repo/docs?utm_source"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-background mt-16">
+      {/* Hero Section */}
+      <div className="relative ">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-primary/5 to-background z-0" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-32 relative z-0">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-primary mb-6">
+              Global Uptime Monitoring,{" "}
+              <span className="text-primary">Decentralized</span>
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+              Monitor your websites from multiple locations worldwide. Get
+              instant notifications when issues arise. Trust in a network, not a
+              single point of failure.
+            </p>
+            <div className="flex justify-center gap-4">
+              <Button size="lg">
+                Start Monitoring
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+              <Button variant="outline" size="lg">
+                View Demo
+              </Button>
+            </div>
+          </div>
         </div>
-        <Button appName="web" className={styles.secondary}>
-          Open alert
-        </Button>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com/templates?search=turborepo&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://turbo.build?utm_source=create-turbo"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to turbo.build →
-        </a>
+      </div>
+
+      {/* Trusted By Section */}
+      <div className="border-y bg-muted/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <p className="text-center text-muted-foreground mb-8">
+            Trusted by innovative companies worldwide
+          </p>
+
+          {/* Company Logos */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 items-center justify-items-center mb-16 h-8">
+            <img
+              src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg"
+              alt="Vercel"
+              className="opacity-70 hover:opacity-100 transition-opacity h-[64px] bg-white rounded-lg p-2"
+            />
+
+            <img
+              src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/prisma/prisma-original.svg"
+              alt="Next.js"
+              className="opacity-70 hover:opacity-100 transition-opacity h-[64px] bg-white rounded-lg p-2"
+            />
+            <img
+              src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/solidity/solidity-original.svg"
+              alt="Solidity"
+              className="h-[64px] opacity-70 hover:opacity-100 transition-opacity bg-white rounded-lg p-2"
+            />
+            <img
+              src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/bun/bun-original.svg"
+              alt="Bun"
+              className="h-[64px] opacity-70 hover:opacity-100 transition-opacity bg-white rounded-lg p-2"
+            />
+            <img
+              src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg"
+              alt="PostgreSQL"
+              className="h-[64px] opacity-70 hover:opacity-100 transition-opacity bg-white rounded-lg p-2"
+            />
+          </div>
+
+          {/* Awards and Ratings */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center max-w-3xl mx-auto">
+            <div className="flex flex-col items-center">
+              <div className="flex items-center gap-1 mb-2">
+                <Star className="h-5 w-5 fill-yellow-400 stroke-yellow-400" />
+                <Star className="h-5 w-5 fill-yellow-400 stroke-yellow-400" />
+                <Star className="h-5 w-5 fill-yellow-400 stroke-yellow-400" />
+                <Star className="h-5 w-5 fill-yellow-400 stroke-yellow-400" />
+                <Star className="h-5 w-5 fill-yellow-400 stroke-yellow-400" />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Product of the Day
+              </p>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="flex items-center gap-1 mb-2">
+                <Star className="h-5 w-5 fill-yellow-400 stroke-yellow-400" />
+                <Star className="h-5 w-5 fill-yellow-400 stroke-yellow-400" />
+                <Star className="h-5 w-5 fill-yellow-400 stroke-yellow-400" />
+                <Star className="h-5 w-5 fill-yellow-400 stroke-yellow-400" />
+                <Star className="h-5 w-5 fill-yellow-400 stroke-yellow-400" />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Product of the Week
+              </p>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="flex items-center gap-1 mb-2">
+                <Star className="h-5 w-5 fill-yellow-400 stroke-yellow-400" />
+                <Star className="h-5 w-5 fill-yellow-400 stroke-yellow-400" />
+                <Star className="h-5 w-5 fill-yellow-400 stroke-yellow-400" />
+                <Star className="h-5 w-5 fill-yellow-400 stroke-yellow-400" />
+                <Star className="h-5 w-5 fill-yellow-400 stroke-yellow-400" />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Product of the Month
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Features Grid */}
+      <div className="py-24 bg-muted/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-primary mb-4">
+              Why Choose Decentralized Monitoring?
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              Reliable, accurate, and truly global website monitoring
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <FeatureCard
+              icon={<Globe2 className="h-8 w-8" />}
+              title="Global Coverage"
+              description="Monitor from multiple locations worldwide for accurate uptime data"
+            />
+            <FeatureCard
+              icon={<Activity className="h-8 w-8" />}
+              title="Real-time Monitoring"
+              description="Get instant insights into your website's performance and availability"
+            />
+            <FeatureCard
+              icon={<Bell className="h-8 w-8" />}
+              title="Instant Alerts"
+              description="Receive immediate notifications when issues are detected"
+            />
+            <FeatureCard
+              icon={<Shield className="h-8 w-8" />}
+              title="Decentralized Security"
+              description="No single point of failure in our monitoring infrastructure"
+            />
+            <FeatureCard
+              icon={<Users className="h-8 w-8" />}
+              title="Community Powered"
+              description="Leverage a network of global nodes for reliable monitoring"
+            />
+            <FeatureCard
+              icon={<Activity className="h-8 w-8" />}
+              title="Advanced Analytics"
+              description="Detailed insights and historical data at your fingertips"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Stats Section */}
+      <div className="py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <StatCard number="99.9%" label="Average Uptime" />
+            <StatCard number="150+" label="Global Nodes" />
+            <StatCard number="10,000+" label="Websites Monitored" />
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="bg-background border-t">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="text-center text-sm text-muted-foreground">
+            © 2024 Decentralized Monitoring. All rights reserved.
+          </div>
+        </div>
       </footer>
     </div>
+  );
+}
+
+function FeatureCard({
+  icon,
+  title,
+  description,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}) {
+  return (
+    <Card className="p-6 hover:shadow-lg transition-shadow">
+      <div className="text-primary mb-4">{icon}</div>
+      <h3 className="text-xl font-semibold mb-2">{title}</h3>
+      <p className="text-muted-foreground">{description}</p>
+    </Card>
+  );
+}
+
+function StatCard({ number, label }: { number: string; label: string }) {
+  return (
+    <Card className="p-8">
+      <div className="text-4xl font-bold text-primary mb-2">{number}</div>
+      <div className="text-muted-foreground">{label}</div>
+    </Card>
   );
 }
