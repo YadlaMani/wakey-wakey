@@ -24,7 +24,8 @@ export const createWebsite = async (req: Request, res: Response) => {
         userId,
       },
     });
-    res.status(400).json({
+    console.log(website);
+    res.status(200).json({
       message: "Website created successfully",
       success: true,
       data: website,
@@ -91,6 +92,9 @@ export const getWebsites = async (req: Request, res: Response) => {
       where: {
         userId,
         disabled: false,
+      },
+      include: {
+        ticks: true,
       },
     });
     res.status(200).json({
