@@ -17,9 +17,11 @@ export function useWebsites() {
   const [websites, setWebsites] = useState<Website[]>([]);
   const [error, setError] = useState<string | null>(null);
   async function fetchWebsites() {
-    const token = getToken();
+    const token = await getToken();
+
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/api/v1/website`,
+
       {
         headers: {
           Authorization: `Bearer ${token}`,
