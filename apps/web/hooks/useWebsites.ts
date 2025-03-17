@@ -16,6 +16,7 @@ export function useWebsites() {
   const { getToken } = useAuth();
   const [websites, setWebsites] = useState<Website[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   async function fetchWebsites() {
     const token = await getToken();
 
@@ -32,11 +33,14 @@ export function useWebsites() {
     else setError(response.data.message);
   }
   useEffect(() => {
+    setLoading(true);
     fetchWebsites();
+    console.log(websites);
+    setLoading(false);
     const interval = setInterval(() => {
       fetchWebsites();
     }, 1000 * 60);
     return () => clearInterval(interval);
   }, []);
-  return { websites, error };
+  return { websites, error, loading, fetchWebsites };
 }

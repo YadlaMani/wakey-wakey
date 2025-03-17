@@ -38,9 +38,10 @@ model WebSiteTicks{
   website Website @relation(fields:[websiteId],references:[id])
   validatorId String
   validator Validator @relation(fields:[validatorId],references:[id])
-  timestamp DateTime
+ 
   status Status
   latency Int
+  createdAt DateTime @default(now())
 
 
   
