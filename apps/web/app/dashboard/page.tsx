@@ -30,7 +30,7 @@ import { Spinner } from "@/components/ui/spinner";
 function getTimeFrames(ticks: any[]) {
   const frames = Array(10).fill("GRAY");
 
-  const lastTicks = ticks.slice(-10);
+  const lastTicks = ticks.slice(-10).reverse();
 
   lastTicks.forEach((tick, index) => {
     frames[index] = tick.status === "BAD" ? "BAD" : "GOOD";
@@ -41,10 +41,8 @@ function getTimeFrames(ticks: any[]) {
 
 function getLatestStatus(ticks: any[]) {
   if (!ticks.length) return "GOOD";
-  const sortedTicks = [...ticks].sort(
-    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-  );
-  return sortedTicks[0].status;
+  const latestTick = ticks[ticks.length - 1];
+  return latestTick.status;
 }
 
 function getAverageLatency(ticks: any[]) {
@@ -100,7 +98,7 @@ export default function Dashboard() {
             const timeFrames = getTimeFrames(website.ticks);
             const currentStatus = getLatestStatus(website.ticks);
             const avgLatency = getAverageLatency(website.ticks);
-            const lastTick = website.ticks[0];
+            const lastTick = website.ticks[website.ticks.length - 1];
 
             return (
               <Card key={website.id} className="p-0">

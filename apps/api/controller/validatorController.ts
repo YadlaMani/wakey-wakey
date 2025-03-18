@@ -7,6 +7,9 @@ export const getValidator = async (req: Request, res: Response) => {
       where: {
         publicKey,
       },
+      include: {
+        ticks: true,
+      },
     });
     if (validator) {
       res.json({
@@ -21,6 +24,9 @@ export const getValidator = async (req: Request, res: Response) => {
         publicKey,
         ip,
         location,
+      },
+      include: {
+        ticks: true,
       },
     });
     res.json({

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import axios from "axios";
@@ -17,13 +17,35 @@ import {
   DollarSign,
   Shield,
   Server,
+  CheckCircle2,
+  XCircle,
+  Link as LinkIcon,
 } from "lucide-react";
+import { format } from "date-fns";
+
+interface WebsiteTick {
+  id: string;
+  websiteId: string;
+  website: {
+    url: string;
+  };
+  status: "GOOD" | "BAD";
+  latency: number;
+  createdAt: string;
+}
 
 interface Validator {
   id: string;
   location: string;
   ip: string;
   pendingPayouts: number;
+  ticks: WebsiteTick[];
+}
+interface Tick {
+  id: string;
+  websiteId: string;
+  status: "GOOD" | "BAD";
+  latency: number;
 }
 
 const Page: React.FC = () => {
@@ -32,11 +54,14 @@ const Page: React.FC = () => {
   const [location, setLocation] = useState<string | null>(null);
   const [validator, setValidator] = useState<Validator | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [validating, setValidating] = useState(false);
   const [stats, setStats] = useState({
     totalValidations: 0,
     successRate: 0,
     avgResponseTime: 0,
   });
+
+  const socketRef = useRef<WebSocket | null>(null);
 
   async function fetchIpAndLocation() {
     try {
@@ -69,14 +94,23 @@ const Page: React.FC = () => {
         }
       );
       if (res.data.success) {
-        console.log("Validator info:", res.data.validator);
         toast.success("Welcome validator");
         setValidator(res.data.validator);
-        // Simulated stats for demonstration
+        console.log(res.data.validator);
+
+        const ticks = res.data.validator.ticks || [];
+        const totalTicks = ticks.length;
+        const successfulTicks = ticks.filter(
+          (tick: Tick) => tick.status === "GOOD"
+        ).length;
+        const avgLatency =
+          ticks.reduce((sum: number, tick: Tick) => sum + tick.latency, 0) /
+            totalTicks || 0;
+
         setStats({
-          totalValidations: 1234,
-          successRate: 99.8,
-          avgResponseTime: 245,
+          totalValidations: totalTicks,
+          successRate: totalTicks ? (successfulTicks / totalTicks) * 100 : 0,
+          avgResponseTime: Math.round(avgLatency),
         });
       }
     } catch (err) {
@@ -84,6 +118,83 @@ const Page: React.FC = () => {
       console.error(err);
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  function startValidation() {
+    if (!validator) {
+      toast.error("Validator data not loaded yet!");
+      return;
+    }
+
+    if (socketRef.current) {
+      toast.info("Validation is already running.");
+      return;
+    }
+
+    const ws = new WebSocket(`ws://localhost:5050/${validator.id}`);
+    socketRef.current = ws;
+
+    ws.onopen = () => {
+      ws.send(JSON.stringify({ type: "join_validator", id: validator.id }));
+      toast.success("Started validation!");
+      setValidating(true);
+    };
+
+    ws.onmessage = async (event) => {
+      const data = JSON.parse(event.data);
+      console.log(data);
+
+      if (data.type === "validate_website") {
+        const websiteId = data.websiteId;
+
+        try {
+          const start = Date.now();
+          const response = await fetch(data.url, {
+            method: "GET",
+            mode: "no-cors",
+          });
+
+          const latency = Date.now() - start;
+
+          ws.send(
+            JSON.stringify({
+              type: "validation_result",
+              websiteId,
+              status: "GOOD",
+              latency,
+            })
+          );
+        } catch (error) {
+          ws.send(
+            JSON.stringify({
+              type: "validation_result",
+              websiteId,
+              status: "BAD",
+              latency: 9999,
+            })
+          );
+        }
+      }
+    };
+
+    ws.onclose = () => {
+      setValidating(false);
+      socketRef.current = null;
+      toast.info("Stopped validation.");
+    };
+  }
+
+  function stopValidation() {
+    if (socketRef.current) {
+      socketRef.current.send(
+        JSON.stringify({ type: "leave_validator", id: validator?.id })
+      );
+      socketRef.current.close();
+      socketRef.current = null;
+      setValidating(false);
+    } else {
+      toast.info("Validation is not running.");
     }
   }
 
@@ -102,9 +213,7 @@ const Page: React.FC = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Card className="w-full max-w-md p-8">
           <div className="text-center space-y-6">
-            <div className="flex justify-center">
-              <Shield className="h-12 w-12 text-primary" />
-            </div>
+            <Shield className="h-12 w-12 text-primary mx-auto" />
             <h1 className="text-2xl font-semibold text-primary">
               Website Validator
             </h1>
@@ -112,9 +221,7 @@ const Page: React.FC = () => {
               Connect your wallet to start validating websites and earning
               rewards
             </p>
-            <div className="flex justify-center">
-              <WalletMultiButton />
-            </div>
+            <WalletMultiButton />
           </div>
         </Card>
       </div>
@@ -161,7 +268,9 @@ const Page: React.FC = () => {
                 <Shield className="h-8 w-8 text-primary" />
                 <div>
                   <p className="text-sm text-muted-foreground">Success Rate</p>
-                  <p className="text-2xl font-semibold">{stats.successRate}%</p>
+                  <p className="text-2xl font-semibold">
+                    {stats.successRate.toFixed(1)}%
+                  </p>
                 </div>
               </div>
             </Card>
@@ -241,8 +350,8 @@ const Page: React.FC = () => {
           <Card className="p-6">
             <h2 className="text-xl font-semibold mb-6">Actions</h2>
             <div className="flex space-x-4">
-              <Button onClick={() => toast.success("Validation started")}>
-                Start Validation
+              <Button onClick={validating ? stopValidation : startValidation}>
+                {validating ? "Stop Validation" : "Start Validation"}
               </Button>
               <Button
                 variant="outline"
@@ -250,6 +359,55 @@ const Page: React.FC = () => {
               >
                 Claim Rewards
               </Button>
+            </div>
+          </Card>
+
+          {/* Validation History */}
+          <Card className="p-6">
+            <h2 className="text-xl font-semibold mb-6">Validation History</h2>
+            <div className="space-y-4">
+              {validator?.ticks && validator.ticks.length > 0 ? (
+                validator.ticks
+                  .sort(
+                    (a, b) =>
+                      new Date(b.createdAt).getTime() -
+                      new Date(a.createdAt).getTime()
+                  )
+                  .map((tick) => (
+                    <div
+                      key={tick.id}
+                      className="flex items-center justify-between p-4 bg-muted/30 rounded-lg"
+                    >
+                      <div className="flex items-center space-x-4">
+                        {tick.status === "GOOD" ? (
+                          <CheckCircle2 className="h-5 w-5 text-green-500" />
+                        ) : (
+                          <XCircle className="h-5 w-5 text-red-500" />
+                        )}
+                        <div>
+                          <div className="flex items-center space-x-2">
+                            <p className="font-medium">{tick.websiteId}</p>
+                            <LinkIcon className="h-4 w-4 text-muted-foreground" />
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {format(
+                              new Date(tick.createdAt),
+                              "MMM d, yyyy HH:mm:ss"
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-medium">{tick.latency}ms</p>
+                        <p className="text-sm text-muted-foreground">Latency</p>
+                      </div>
+                    </div>
+                  ))
+              ) : (
+                <div className="text-center text-muted-foreground py-8">
+                  No validation history available
+                </div>
+              )}
             </div>
           </Card>
         </div>
