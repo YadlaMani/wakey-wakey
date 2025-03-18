@@ -3,10 +3,20 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "dev": "bun run --watch index.ts",
+    "build": "bun run tsc -b",
+    "start": "bun run ./dist/index.js"
+  },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@repo/db": "*",
+    "@repo/common": "*"
   },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "dependencies": {
+    "@solana/web3.js": "^1.98.0"
   }
 }

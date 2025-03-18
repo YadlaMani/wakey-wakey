@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "sonner";
 import { Appbar } from "@/components/Appbar";
 import { ThemeProvider } from "@/components/ui/theme-provider";
+import AppWalletProvider from "@/components/AppWalletProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,20 +33,22 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         cz-shortcut-listen="true"
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <ClerkProvider>
-            <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-background">
-              <Appbar />
-              {children}
-              <Toaster />
-            </div>
-          </ClerkProvider>
-        </ThemeProvider>
+        <AppWalletProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <ClerkProvider>
+              <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-background">
+                <Appbar />
+                {children}
+                <Toaster />
+              </div>
+            </ClerkProvider>
+          </ThemeProvider>
+        </AppWalletProvider>
       </body>
     </html>
   );
