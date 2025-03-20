@@ -49,6 +49,11 @@ The platform consists of the following components:
 
 ## Screenshots
 
+![image](https://github.com/user-attachments/assets/6405a228-c3df-4862-8c9d-238673db723e)
+![image](https://github.com/user-attachments/assets/0ac41d04-dde6-446e-942e-e79306bb2a4d)
+![image](https://github.com/user-attachments/assets/26184c7e-ff5c-4e56-a2f6-eec396b0f02d)
+![image](https://github.com/user-attachments/assets/a63935b2-9af9-495d-970b-0623a44c9321)
+
 ## Getting Started
 
 ### Prerequisites
