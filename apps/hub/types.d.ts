@@ -6,3 +6,7 @@ interface Validator {
   ip: string;
   pendingPayouts: number;
 }
+interface User {
+  id: string;
+  email: string;
+}
