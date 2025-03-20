@@ -1,6 +1,7 @@
 //internals packages
 import websiteRoutes from "./router/websiteRoutes";
 import validatorRoutes from "./router/validatorRoutes";
+import userRoutes from "./router/userRoutes";
 //external packages
 import express from "express";
 import cors from "cors";
@@ -17,3 +18,4 @@ app.get("/", (req, res) => {
 });
 app.use("/api/v1/website", authMiddleware, websiteRoutes);
 app.use("/api/v1/validator", validatorRoutes);
+app.use("/api/v1/user", userRoutes);
