@@ -11,6 +11,69 @@ This decentralized approach ensures:
 - **Greater reliability**: No single point of failure.
 - **Wider coverage**: Validators from around the globe monitor websites.
 - **Cost efficiency**: Affordable for website owners and rewarding for validators.
+## ✨ Platform Features
+
+### Website Monitoring
+
+- [ ] Performance Tracking
+
+- [ ] Generate comprehensive uptime reports
+
+- [ ] Provide historical analytics for performance trends
+
+### Multi-Region Validation
+
+- [ ] Adaptive monitoring intervals based on site stability
+
+- [ ] Geolocation-based performance analysis
+
+### Validator Network
+
+- [ ] Participation & Rewards
+
+- [ ] Implement slashing for fraudulent validators
+
+### Decentralized Infrastructure
+
+- [ ] Incentives to encourage network growth
+
+- [ ] upport for lightweight node deployment
+
+### Alerts & Notifications
+
+- [ ] Real-Time Alerts
+
+- [ ] Multi-channel alerting (Discord, Webhooks, SMS)
+
+### Dashboard & Analytics
+
+- [ ] Monitoring Insights
+
+- [ ] Customizable data visualization
+
+- [ ] Exportable reports (CSV/JSON/PDF)
+
+### Payment & Incentives
+
+- [ ] Solana Integration
+
+- [ ] Automated payments based on validation efforts
+
+- [ ] Secure wallet integration for website owners and validators
+
+### User Experience
+
+#### For Website Owners
+
+- [ ] Advanced analytics and uptime history
+
+- [ ] Subscription model for premium features
+
+#### For Validators
+
+- [ ] Performance tracking to improve contributions
+
+- [ ] Community support for troubleshooting
 
 ## Features
 
@@ -48,6 +111,11 @@ The platform consists of the following components:
 5. **Rewards**: Validators earn SOL for successfully completing monitoring tasks.
 
 ## Screenshots
+
+![image](https://github.com/user-attachments/assets/6405a228-c3df-4862-8c9d-238673db723e)
+![image](https://github.com/user-attachments/assets/0ac41d04-dde6-446e-942e-e79306bb2a4d)
+![image](https://github.com/user-attachments/assets/26184c7e-ff5c-4e56-a2f6-eec396b0f02d)
+![image](https://github.com/user-attachments/assets/a63935b2-9af9-495d-970b-0623a44c9321)
 
 ## Getting Started
 
