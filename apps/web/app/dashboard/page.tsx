@@ -93,6 +93,43 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto py-8">
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Website
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add New Website</DialogTitle>
+              <DialogDescription>
+                Enter the URL of the website you want to monitor
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <Input
+                placeholder="https://example.com"
+                value={newWebsiteUrl}
+                onChange={(e) => setNewWebsiteUrl(e.target.value)}
+              />
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                onClick={() => {
+                  handleNewWebsite(newWebsiteUrl);
+                  setIsDialogOpen(false);
+                  setNewWebsiteUrl("");
+                }}
+              >
+                Start Monitoring
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
         <div className="grid gap-6">
           {websites.map((website) => {
             const timeFrames = getTimeFrames(website.ticks);

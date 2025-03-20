@@ -45,10 +45,13 @@ function distributeWebsites() {
   });
 }
 
-setInterval(async () => {
-  await fetchWebsiteForValidation();
-  distributeWebsites();
-}, 1000 * 30);
+setInterval(
+  async () => {
+    await fetchWebsiteForValidation();
+    distributeWebsites();
+  },
+  1000 * 60 * 3
+); //every 3 minutes
 
 wss.on("connection", (ws, req) => {
   try {
