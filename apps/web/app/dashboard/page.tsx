@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { format, subMinutes } from "date-fns";
+import { format, subDays, formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import { useAuth } from "@clerk/nextjs";
 import {
@@ -22,23 +22,54 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Plus, ExternalLink } from "lucide-react";
+import { Plus, ExternalLink, Clock, Activity, Server } from "lucide-react";
 import { useWebsites } from "@/hooks/useWebsites";
 import axios from "axios";
 import { Spinner } from "@/components/ui/spinner";
 
+function calculateUptime(ticks: any[]) {
+  if (!ticks.length) return 100;
+  const totalTicks = ticks.length;
+  const goodTicks = ticks.filter((tick) => tick.status === "GOOD").length;
+  return Math.round((goodTicks / totalTicks) * 100);
+}
+
 function getTimeFrames(ticks: any[]) {
-  const frames = Array(10).fill("GRAY");
-
-  const lastTicks = ticks.slice(-10).reverse();
-
+  const frames = Array(24).fill("GRAY");
+  const lastTicks = ticks.slice(-24).reverse();
   lastTicks.forEach((tick, index) => {
     frames[index] = tick.status === "BAD" ? "BAD" : "GOOD";
   });
-
   return frames.reverse();
 }
-
+interface Validator {
+  id: string;
+  publicKey: string;
+  location: string;
+  ip: string;
+  pendingPayouts: number;
+}
+interface Website {
+  id: string;
+  url: string;
+  ticks: WebsiteTick[];
+  validators: Validator[];
+  name: string;
+}
+interface WebsiteTick {
+  id: string;
+  createdAt: string;
+  status: "GOOD" | "BAD";
+  latency: number;
+  validator: Validator;
+}
+interface UseWebsitesReturn {
+  websites: Website[];
+  error: string | null;
+  loading: boolean;
+  fetchWebsites: () => void;
+  lastValidator: Validator | null;
+}
 function getLatestStatus(ticks: any[]) {
   if (!ticks.length) return "GOOD";
   const latestTick = ticks[ticks.length - 1];
@@ -52,6 +83,31 @@ function getAverageLatency(ticks: any[]) {
   return Math.round(
     validTicks.reduce((sum, tick) => sum + tick.latency, 0) / validTicks.length
   );
+}
+
+function getLatencyTrend(ticks: any[]) {
+  const lastTicks = ticks.slice(-5);
+  if (lastTicks.length < 2) return "stable";
+
+  const latencies = lastTicks.map((tick) => tick.latency);
+  const trend = latencies[latencies.length - 1] - latencies[0];
+
+  if (trend > 50) return "increasing";
+  if (trend < -50) return "decreasing";
+  return "stable";
+}
+
+function getValidatorInfo(ticks: any[]) {
+  if (!ticks.length) return null;
+  const latestTick = ticks[ticks.length - 1];
+  return latestTick.validator;
+}
+interface Validator {
+  id: string;
+  publicKey: string;
+  location: string;
+  ip: string;
+  pendingPayouts: number;
 }
 
 export default function Dashboard() {
@@ -93,49 +149,58 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto py-8">
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Website
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add New Website</DialogTitle>
-              <DialogDescription>
-                Enter the URL of the website you want to monitor
-              </DialogDescription>
-            </DialogHeader>
-            <div className="py-4">
-              <Input
-                placeholder="https://example.com"
-                value={newWebsiteUrl}
-                onChange={(e) => setNewWebsiteUrl(e.target.value)}
-              />
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                Cancel
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold">Website Monitoring</h1>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Website
               </Button>
-              <Button
-                onClick={() => {
-                  handleNewWebsite(newWebsiteUrl);
-                  setIsDialogOpen(false);
-                  setNewWebsiteUrl("");
-                }}
-              >
-                Start Monitoring
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add New Website</DialogTitle>
+                <DialogDescription>
+                  Enter the URL of the website you want to monitor
+                </DialogDescription>
+              </DialogHeader>
+              <div className="py-4">
+                <Input
+                  placeholder="https://example.com"
+                  value={newWebsiteUrl}
+                  onChange={(e) => setNewWebsiteUrl(e.target.value)}
+                />
+              </div>
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => {
+                    handleNewWebsite(newWebsiteUrl);
+                    setIsDialogOpen(false);
+                    setNewWebsiteUrl("");
+                  }}
+                >
+                  Start Monitoring
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
         <div className="grid gap-6">
           {websites.map((website) => {
             const timeFrames = getTimeFrames(website.ticks);
             const currentStatus = getLatestStatus(website.ticks);
             const avgLatency = getAverageLatency(website.ticks);
             const lastTick = website.ticks[website.ticks.length - 1];
+            const uptime = calculateUptime(website.ticks);
+            const latencyTrend = getLatencyTrend(website.ticks);
+            const validator = getValidatorInfo(website.ticks);
 
             return (
               <Card key={website.id} className="p-0">
@@ -144,10 +209,21 @@ export default function Dashboard() {
                     <AccordionTrigger className="px-6 py-4">
                       <div className="flex items-center space-x-4 w-full">
                         <div
-                          className={`h-3 w-3 rounded-full ${currentStatus === "GOOD" ? "bg-green-500" : "bg-red-500"}`}
+                          className={`h-3 w-3 rounded-full ${
+                            currentStatus === "GOOD"
+                              ? "bg-green-500"
+                              : "bg-red-500"
+                          }`}
                         />
                         <h2 className="text-lg font-medium">{website.url}</h2>
-                        <ExternalLink className="h-4 w-4 text-muted-foreground" />
+                        <a
+                          href={website.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:text-primary"
+                        >
+                          <ExternalLink className="h-4 w-4 text-muted-foreground" />
+                        </a>
                         <p className="text-sm font-medium">
                           {currentStatus === "GOOD" ? (
                             <span className="text-green-500">Operational</span>
@@ -155,22 +231,78 @@ export default function Dashboard() {
                             <span className="text-red-500">Down</span>
                           )}
                         </p>
-                        <p className="text-sm text-muted-foreground">
-                          Last checked{" "}
-                          {lastTick
-                            ? format(new Date(lastTick.createdAt), "HH:mm:ss")
-                            : "Never"}
-                        </p>
+                        <div className="flex items-center space-x-2">
+                          <Clock className="h-4 w-4 text-muted-foreground" />
+                          <p className="text-sm text-muted-foreground">
+                            {lastTick
+                              ? formatDistanceToNow(
+                                  new Date(lastTick.createdAt),
+                                  {
+                                    addSuffix: true,
+                                  }
+                                )
+                              : "Never"}
+                          </p>
+                        </div>
                       </div>
                     </AccordionTrigger>
                     <AccordionContent>
                       <div className="px-6 pb-6">
-                        <h3 className="font-medium">Response Time</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {currentStatus === "GOOD"
-                            ? `${avgLatency}ms`
-                            : "No response"}
-                        </p>
+                        <div className="grid grid-cols-3 gap-4 mb-6">
+                          <div>
+                            <h3 className="font-medium flex items-center">
+                              <Activity className="h-4 w-4 mr-2" />
+                              Uptime
+                            </h3>
+                            <p className="text-2xl font-bold">{uptime}%</p>
+                            <p className="text-sm text-muted-foreground">
+                              Last 24 hours
+                            </p>
+                          </div>
+                          <div>
+                            <h3 className="font-medium">Response Time</h3>
+                            <p className="text-2xl font-bold">
+                              {currentStatus === "GOOD"
+                                ? `${avgLatency}ms`
+                                : "—"}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              Trend:{" "}
+                              <span
+                                className={
+                                  latencyTrend === "increasing"
+                                    ? "text-red-500"
+                                    : latencyTrend === "decreasing"
+                                      ? "text-green-500"
+                                      : ""
+                                }
+                              >
+                                {latencyTrend}
+                              </span>
+                            </p>
+                          </div>
+                          <div>
+                            <h3 className="font-medium flex items-center">
+                              <Server className="h-4 w-4 mr-2" />
+                              Last Validator
+                            </h3>
+                            {website.lastValidator ? (
+                              <>
+                                <p className="text-sm mt-1">
+                                  {website.lastValidator.location || "Unknown"}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  {website.lastValidator.ip || "—"}
+                                </p>
+                              </>
+                            ) : (
+                              <p className="text-sm text-muted-foreground">
+                                No data available
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <h3 className="font-medium mb-2">24-Hour History</h3>
                         <div className="flex space-x-1">
                           {timeFrames.map((status, index) => (
                             <div
@@ -184,6 +316,10 @@ export default function Dashboard() {
                               }`}
                             />
                           ))}
+                        </div>
+                        <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                          <span>24 hours ago</span>
+                          <span>Now</span>
                         </div>
                       </div>
                     </AccordionContent>

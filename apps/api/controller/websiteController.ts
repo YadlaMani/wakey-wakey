@@ -82,28 +82,42 @@ export const getWebsites = async (req: Request, res: Response) => {
   try {
     const userId = req.userId;
     if (!userId) {
-      res.status(401).json({
+      return res.status(401).json({
         message: "Unauthorized access",
         success: false,
       });
-      return;
     }
+
     const websites = await prismaClient.website.findMany({
       where: {
         userId,
         disabled: false,
       },
       include: {
-        ticks: true,
+        ticks: {
+          orderBy: { createdAt: "desc" },
+          take: 10,
+          include: {
+            validator: true,
+          },
+        },
       },
     });
+
+    const formattedWebsites = websites.map((website) => ({
+      ...website,
+      lastValidator:
+        website.ticks.length > 0 ? website.ticks[0].validator : null,
+      recentTicks: website.ticks,
+    }));
+
     res.status(200).json({
       message: "Websites found",
       success: true,
-      websites,
+      websites: formattedWebsites,
     });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({
       message: "Internal server error",
       success: false,
