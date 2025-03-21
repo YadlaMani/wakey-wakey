@@ -7,6 +7,7 @@ import {
 } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/ui/mode-toggle";
+import SyncUser from "./SyncUser";
 export function Appbar() {
   return (
     <div className="flex backdrop-blur-lg bg-white/30 mx-12 justify-between items-center px-4 py-4 rounded-2xl shadow-lg border border-gray-800 sticky top-2 z-10">
@@ -23,6 +24,7 @@ export function Appbar() {
           </div>
         </SignedOut>
         <SignedIn>
+          <SyncUser />
           <UserButton />
         </SignedIn>
       </header>

@@ -1,6 +1,7 @@
 import { WebSocketServer, WebSocket } from "ws";
 import { prismaClient } from "@repo/db/client";
-import type { Validator } from "./types";
+import type { Validator, User } from "./types";
+import { sendFailureMail } from "./utils/mail";
 
 const validators: { [id: string]: WebSocket } = {};
 const websiteQueue: { websiteId: string; url: string }[] = [];
@@ -48,7 +49,7 @@ function distributeWebsites() {
 setInterval(async () => {
   await fetchWebsiteForValidation();
   distributeWebsites();
-}, 1000 * 30);
+}, 1000 * 60); //every 3 minutes
 
 wss.on("connection", (ws, req) => {
   try {
@@ -72,6 +73,23 @@ wss.on("connection", (ws, req) => {
         distributeWebsites();
       } else if (data.type === "validation_result") {
         const { websiteId, status, latency } = data;
+        if (status === "BAD") {
+          const website = await prismaClient.website.findUnique({
+            where: { id: websiteId },
+          });
+          if (website) {
+            const user = await prismaClient.user.findUnique({
+              where: { id: website.userId },
+              select: { email: true },
+            });
+            const validator = await prismaClient.validator.findUnique({
+              where: { id: validatorId },
+            });
+            if (user && validator) {
+              sendFailureMail(user.email, website.url, validator.location);
+            }
+          }
+        }
 
         await prismaClient.webSiteTicks.create({
           data: {

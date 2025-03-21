@@ -15,13 +15,13 @@ datasource db {
 model User{
   id String @id @default(uuid())
   email String @unique
-  // websites Website[]
+  websites Website[]
 }
 model Website{
   id String @id @default(uuid())
   url String 
   userId String
-  // user User @relation(fields:[userId],references:[id])
+  user User @relation(fields:[userId],references:[id])
   ticks WebSiteTicks[]
   disabled Boolean @default(false)
 }
