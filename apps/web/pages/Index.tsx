@@ -78,7 +78,7 @@ export default function Index() {
           </div>
 
           {/* Dashboard Preview */}
-          <div className="mt-16 max-w-4xl mx-auto animate-slide-up [animation-delay:300ms]">
+          <div className="mt-16 max-w-4xl mx-auto animate-slide-up [animation-delay:300ms] z-1">
             <div className="rounded-lg border shadow-lg overflow-hidden bg-card">
               <div className="p-1 border-b bg-muted/30 flex items-center space-x-2 px-4">
                 <div className="h-2.5 w-2.5 rounded-full bg-red-500"></div>
@@ -551,22 +551,7 @@ export default function Index() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-24 bg-primary text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-6">
-            Ready to Keep Your Website Always Awake?
-          </h2>
-          <p className="text-xl opacity-90 max-w-2xl mx-auto mb-10">
-            Join thousands of website owners who trust Wakey-Wakey for reliable, decentralized uptime monitoring.
-          </p>
-          <Button size="lg" variant="outline" className="bg-white text-primary hover:bg-white/90">
-            Start Monitoring Now
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-        </div>
-      </section>
-
+      
       {/* Footer */}
       <footer className="bg-background border-t">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
