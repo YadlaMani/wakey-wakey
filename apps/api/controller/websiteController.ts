@@ -40,7 +40,8 @@ export const createWebsite = async (req: Request, res: Response) => {
 };
 export const getWebsiteDetails = async (req: Request, res: Response) => {
   try {
-    const { id } = req.body;
+    const { id } = req.params;
+    console.log(id);
     if (!req.userId) {
       res.status(401).json({
         message: "Unauthorized access",
@@ -62,6 +63,7 @@ export const getWebsiteDetails = async (req: Request, res: Response) => {
         },
       },
     });
+
     if (!website) {
       res.status(404).json({
         message: "Website not found",

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { format, subDays, formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import { useAuth } from "@clerk/nextjs";
+import Link from "next/link";
 import {
   Dialog,
   DialogContent,
@@ -301,6 +302,11 @@ export default function Dashboard() {
                               </p>
                             )}
                           </div>
+                          <Button>
+                            <Link href={`/dashboard/${website.id}`}>
+                              View more Details
+                            </Link>
+                          </Button>
                         </div>
                         <h3 className="font-medium mb-2">24-Hour History</h3>
                         <div className="flex space-x-1">
