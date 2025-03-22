@@ -182,13 +182,15 @@ const Page = () => {
     doc.text("Incident History", 15, yPos);
     yPos += 10;
 
-    const incidentsData = incidents.map((incident) => [
-      isValidDate(new Date(incident.createdAt))
-        ? format(new Date(incident.createdAt), "MMM d, HH:mm:ss")
-        : "N/A",
-      `${incident.latency}ms`,
-      incident.validator.location,
-    ]);
+    const incidentsData = incidents
+      .reverse()
+      .map((incident) => [
+        isValidDate(new Date(incident.createdAt))
+          ? format(new Date(incident.createdAt), "MMM d, HH:mm:ss")
+          : "N/A",
+        `${incident.latency}ms`,
+        incident.validator.location,
+      ]);
 
     incidentsData.forEach(([time, latency, validatorLocation]) => {
       doc.text(time, 15, yPos);
@@ -532,59 +534,62 @@ const Page = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-8">
-                  {ticks.slice(0, 10).map((tick) => (
-                    <div
-                      key={tick.id}
-                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-                    >
-                      <div className="flex items-center gap-4">
-                        {tick.status === "GOOD" ? (
-                          <CheckCircle className="h-5 w-5 text-green-500" />
-                        ) : (
-                          <XCircle className="h-5 w-5 text-red-500" />
-                        )}
-                        <div>
-                          <p className="font-medium">
-                            {isValidDate(new Date(tick.createdAt))
-                              ? format(
-                                  new Date(tick.createdAt),
-                                  "MMM d, HH:mm:ss"
-                                )
-                              : "N/A"}
-                          </p>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <span>Latency: {tick.latency}ms</span>
-                            <span>•</span>
-                            <span>Validator: {tick.validator.location}</span>
+                  {ticks
+                    .slice(0, 10)
+                    .reverse()
+                    .map((tick) => (
+                      <div
+                        key={tick.id}
+                        className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                      >
+                        <div className="flex items-center gap-4">
+                          {tick.status === "GOOD" ? (
+                            <CheckCircle className="h-5 w-5 text-green-500" />
+                          ) : (
+                            <XCircle className="h-5 w-5 text-red-500" />
+                          )}
+                          <div>
+                            <p className="font-medium">
+                              {isValidDate(new Date(tick.createdAt))
+                                ? format(
+                                    new Date(tick.createdAt),
+                                    "MMM d, HH:mm:ss"
+                                  )
+                                : "N/A"}
+                            </p>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <span>Latency: {tick.latency}ms</span>
+                              <span>•</span>
+                              <span>Validator: {tick.validator.location}</span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <Badge
-                          variant={
-                            tick.latency < 100
-                              ? "default"
+                        <div className="flex items-center gap-4">
+                          <Badge
+                            variant={
+                              tick.latency < 100
+                                ? "default"
+                                : tick.latency < 500
+                                  ? "secondary"
+                                  : "destructive"
+                            }
+                          >
+                            {tick.latency < 100
+                              ? "Fast"
                               : tick.latency < 500
-                                ? "secondary"
-                                : "destructive"
-                          }
-                        >
-                          {tick.latency < 100
-                            ? "Fast"
-                            : tick.latency < 500
-                              ? "Medium"
-                              : "Slow"}
-                        </Badge>
-                        <Badge
-                          variant={
-                            tick.status === "GOOD" ? "default" : "destructive"
-                          }
-                        >
-                          {tick.status}
-                        </Badge>
+                                ? "Medium"
+                                : "Slow"}
+                          </Badge>
+                          <Badge
+                            variant={
+                              tick.status === "GOOD" ? "default" : "destructive"
+                            }
+                          >
+                            {tick.status}
+                          </Badge>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </CardContent>
             </Card>
@@ -653,7 +658,7 @@ const Page = () => {
                       No monitoring gaps detected
                     </div>
                   ) : (
-                    availabilityPeriods.map((period, index) => (
+                    availabilityPeriods.reverse().map((period, index) => (
                       <div
                         key={index}
                         className="border-l-4 border-yellow-500 pl-4 py-2"
