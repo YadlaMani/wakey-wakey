@@ -46,10 +46,13 @@ function distributeWebsites() {
   });
 }
 
-setInterval(async () => {
-  await fetchWebsiteForValidation();
-  distributeWebsites();
-}, 1000 * 60);
+setInterval(
+  async () => {
+    await fetchWebsiteForValidation();
+    distributeWebsites();
+  },
+  1000 * 60 * 2
+);
 
 wss.on("connection", (ws, req) => {
   try {

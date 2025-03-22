@@ -52,8 +52,6 @@ export const getWebsiteDetails = async (req: Request, res: Response) => {
     const website = await prismaClient.website.findFirst({
       where: {
         id,
-
-        disabled: false,
       },
       include: {
         ticks: {
@@ -99,7 +97,6 @@ export const getWebsites = async (req: Request, res: Response) => {
     const websites = await prismaClient.website.findMany({
       where: {
         userId,
-        disabled: false,
       },
       include: {
         ticks: {
@@ -133,24 +130,21 @@ export const getWebsites = async (req: Request, res: Response) => {
     });
   }
 };
-export const deleteWebsite = async (req: Request, res: Response) => {
+export const toggleWebsite = async (req: Request, res: Response) => {
   try {
-    const userId = req.userId;
     const { id } = req.params;
-    if (!userId) {
-      res.status(401).json({
-        message: "Unauthorized access",
-        success: false,
-      });
-      return;
-    }
+
+    const prevState = await prismaClient.website.findFirst({
+      where: {
+        id,
+      },
+    });
     const website = await prismaClient.website.update({
       where: {
         id,
-        userId,
       },
       data: {
-        disabled: true,
+        disabled: !prevState?.disabled,
       },
     });
     if (!website) {
@@ -161,7 +155,7 @@ export const deleteWebsite = async (req: Request, res: Response) => {
       return;
     }
     res.status(200).json({
-      message: "Website deleted successfully",
+      message: "Website toggled successfully",
       success: true,
     });
   } catch (err) {

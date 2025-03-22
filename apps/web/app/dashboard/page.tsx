@@ -56,6 +56,7 @@ interface Website {
   ticks: WebsiteTick[];
   validators: Validator[];
   name: string;
+  disabled: boolean;
 }
 interface WebsiteTick {
   id: string;
@@ -129,6 +130,24 @@ export default function Dashboard() {
       fetchWebsites();
     } else {
       toast.error(response.data.message);
+    }
+  }
+  async function toogleWebsiteStatus(websiteId: string) {
+    const token = await getToken();
+    try {
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/website/toggle/${websiteId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.data.success) {
+        toast.success("Website status toggled successfully");
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (err) {
+      toast.error("Something went wrong while toggling website status");
+    } finally {
+      fetchWebsites();
     }
   }
 
@@ -306,6 +325,11 @@ export default function Dashboard() {
                             <Link href={`/dashboard/${website.id}`}>
                               View more Details
                             </Link>
+                          </Button>
+                          <Button
+                            onClick={() => toogleWebsiteStatus(website.id)}
+                          >
+                            {website.disabled ? "Enable" : "Disable"}
                           </Button>
                         </div>
                         <h3 className="font-medium mb-2">24-Hour History</h3>

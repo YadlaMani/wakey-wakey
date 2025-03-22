@@ -26,6 +26,7 @@ interface Website {
   ticks: WebsiteTick[];
   lastValidator?: Validator | null;
   recentTicks: WebsiteTick[];
+  disabled: Boolean;
 }
 
 export function useWebsites() {

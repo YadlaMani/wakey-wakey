@@ -3,11 +3,11 @@ import {
   createWebsite,
   getWebsites,
   getWebsiteDetails,
-  deleteWebsite,
+  toggleWebsite,
 } from "../controller/websiteController";
 const router = express.Router();
 router.get("/", getWebsites);
 router.get("/:id", getWebsiteDetails);
 router.post("/create", createWebsite);
-router.delete("/:id", deleteWebsite);
+router.get("/toggle/:id", toggleWebsite);
 export default router;
