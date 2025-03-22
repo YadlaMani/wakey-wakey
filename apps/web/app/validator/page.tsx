@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import React from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { Loader2 } from "lucide-react";
 import {
   MapPin,
   Globe,
@@ -55,6 +57,7 @@ const Page: React.FC = () => {
   const [validator, setValidator] = useState<Validator | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [validating, setValidating] = useState(false);
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [stats, setStats] = useState({
     totalValidations: 0,
     successRate: 0,
@@ -197,7 +200,28 @@ const Page: React.FC = () => {
       toast.info("Validation is not running.");
     }
   }
-
+  async function withdrawSol() {
+    setIsWithdrawing(true);
+    try {
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/validator/withdraw`,
+        {
+          validatorId: validator?.id,
+        }
+      );
+      if (res.data.success) {
+        toast.message(res.data.message);
+        fetchValidatorInfo();
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (err) {
+      console.log(err);
+      toast.error("Something went wrong");
+    } finally {
+      setIsWithdrawing(false);
+    }
+  }
   useEffect(() => {
     fetchIpAndLocation();
   }, []);
@@ -226,6 +250,10 @@ const Page: React.FC = () => {
         </Card>
       </div>
     );
+  }
+  function calculateAmountInSol(amount: number | undefined) {
+    if (amount === undefined) return 0;
+    return (amount / LAMPORTS_PER_SOL).toString();
   }
 
   return (
@@ -295,7 +323,7 @@ const Page: React.FC = () => {
                     Pending Payout
                   </p>
                   <p className="text-2xl font-semibold">
-                    {validator?.pendingPayouts || 0} SOL
+                    {calculateAmountInSol(validator?.pendingPayouts) || 0} SOL
                   </p>
                 </div>
               </div>
@@ -353,11 +381,12 @@ const Page: React.FC = () => {
               <Button onClick={validating ? stopValidation : startValidation}>
                 {validating ? "Stop Validation" : "Start Validation"}
               </Button>
-              <Button
-                variant="outline"
-                onClick={() => toast.success("Rewards claimed successfully")}
-              >
-                Claim Rewards
+              <Button variant="outline" onClick={withdrawSol}>
+                {isWithdrawing ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  "Withdraw SOL"
+                )}
               </Button>
             </div>
           </Card>

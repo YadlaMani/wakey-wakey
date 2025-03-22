@@ -49,7 +49,7 @@ function distributeWebsites() {
 setInterval(async () => {
   await fetchWebsiteForValidation();
   distributeWebsites();
-}, 1000 * 60); //every 3 minutes
+}, 1000 * 60);
 
 wss.on("connection", (ws, req) => {
   try {
@@ -103,7 +103,7 @@ wss.on("connection", (ws, req) => {
           where: { id: validatorId },
           data: {
             pendingPayouts: {
-              increment: 1000,
+              increment: 10000,
             },
           },
         });

@@ -38,7 +38,7 @@ export const createWebsite = async (req: Request, res: Response) => {
     });
   }
 };
-export const getWebsiteStatus = async (req: Request, res: Response) => {
+export const getWebsiteDetails = async (req: Request, res: Response) => {
   try {
     const { id } = req.body;
     if (!req.userId) {
@@ -51,11 +51,15 @@ export const getWebsiteStatus = async (req: Request, res: Response) => {
     const website = await prismaClient.website.findFirst({
       where: {
         id,
-        userId: req.userId,
+
         disabled: false,
       },
       include: {
-        ticks: true,
+        ticks: {
+          include: {
+            validator: true,
+          },
+        },
       },
     });
     if (!website) {
@@ -81,11 +85,13 @@ export const getWebsiteStatus = async (req: Request, res: Response) => {
 export const getWebsites = async (req: Request, res: Response) => {
   try {
     const userId = req.userId;
+    console.log(userId);
     if (!userId) {
-      return res.status(401).json({
+      res.status(401).json({
         message: "Unauthorized access",
         success: false,
       });
+      return;
     }
 
     const websites = await prismaClient.website.findMany({
