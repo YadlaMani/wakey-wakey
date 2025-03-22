@@ -69,7 +69,7 @@ export function Appbar() {
               <Link href="/dashboard">Dashboard</Link>
             </Button>
             <Button asChild>
-              <Link href="/dashboard/validator">Validator</Link>
+              <Link href="/validator">Validator</Link>
             </Button>
             <UserButton />
           </SignedIn>
