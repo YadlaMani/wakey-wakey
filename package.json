@@ -32,6 +32,8 @@
     "@types/bun": "^1.2.5",
     "@types/nodemailer": "^6.4.17",
     "bs58": "^6.0.0",
+    "jspdf": "^3.0.1",
+    "jspdf-autotable": "^5.0.2",
     "nodemailer": "^6.10.0",
     "public-ip": "^7.0.1",
     "recharts": "^2.15.1",

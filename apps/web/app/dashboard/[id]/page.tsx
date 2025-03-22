@@ -1,10 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { useAuth } from "@clerk/nextjs";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
+
 import {
   Card,
   CardContent,
@@ -85,7 +89,6 @@ interface Website {
 
 const COLORS = ["#10B981", "#F43F5E", "#F59E0B"];
 
-// Utility function to check if a date is valid
 function isValidDate(date: any): boolean {
   return date instanceof Date && !isNaN(date.getTime());
 }
@@ -115,6 +118,87 @@ const Page = () => {
       console.error("Error fetching website details:", err);
     }
   }
+  const handleDownloadPdf = () => {
+    if (!website) return;
+
+    const doc = new jsPDF("p", "mm", "a4");
+
+    let yPos = 20;
+
+    doc.setFontSize(22);
+    doc.text("Website Monitoring Report", 15, yPos);
+    yPos += 10;
+
+    doc.setFontSize(12);
+    doc.text(`Website: ${website.url}`, 15, yPos);
+    yPos += 10;
+
+    doc.text(
+      `Status: ${website.disabled ? "Disabled" : "Operational"}`,
+      15,
+      yPos
+    );
+    yPos += 15;
+
+    doc.setFontSize(14);
+    doc.text("Key Metrics", 15, yPos);
+    yPos += 10;
+
+    const metricsData = [
+      ["Average Latency", `${avgLatency}ms`],
+      ["Uptime (24h)", `${uptime}%`],
+      ["Validator Location", validator?.location || "N/A"],
+      ["Total Earnings", `${totalPayout?.toFixed(5)} SOL`],
+    ];
+
+    metricsData.forEach(([metric, value]) => {
+      doc.text(metric, 15, yPos);
+      doc.text(value, 80, yPos);
+      yPos += 7;
+    });
+
+    yPos += 10;
+
+    doc.setFontSize(14);
+    doc.text("Recent Monitoring Checks", 15, yPos);
+    yPos += 10;
+
+    const ticksData = last10Ticks.map((tick) => [
+      tick.time,
+      `${tick.latency}ms`,
+      tick.status,
+    ]);
+
+    ticksData.forEach(([time, latency, status]) => {
+      doc.text(time, 15, yPos);
+      doc.text(latency, 60, yPos);
+      doc.text(status, 100, yPos);
+      yPos += 7;
+    });
+
+    yPos += 10;
+
+    doc.setFontSize(14);
+    doc.text("Incident History", 15, yPos);
+    yPos += 10;
+
+    const incidentsData = incidents.map((incident) => [
+      isValidDate(new Date(incident.createdAt))
+        ? format(new Date(incident.createdAt), "MMM d, HH:mm:ss")
+        : "N/A",
+      `${incident.latency}ms`,
+      incident.validator.location,
+    ]);
+
+    incidentsData.forEach(([time, latency, validatorLocation]) => {
+      doc.text(time, 15, yPos);
+      doc.text(latency, 60, yPos);
+      doc.text(validatorLocation, 100, yPos);
+      yPos += 7;
+    });
+
+    doc.save(`website_monitor_report_${new Date().toISOString()}.pdf`);
+  };
 
   useEffect(() => {
     if (websiteId) {
@@ -223,6 +307,11 @@ const Page = () => {
             <p className="text-muted-foreground">
               Monitoring status for {website.url}
             </p>
+          </div>
+          <div>
+            <Button variant="outline" onClick={handleDownloadPdf}>
+              Download Report
+            </Button>
           </div>
           <div className="flex items-center gap-4">
             <Badge
