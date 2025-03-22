@@ -24,6 +24,7 @@ model Website{
   user User @relation(fields:[userId],references:[id])
   ticks WebSiteTicks[]
   disabled Boolean @default(false)
+  latencyAlert Int @default(0)
 }
 model Validator{
   id String @id @default(uuid())

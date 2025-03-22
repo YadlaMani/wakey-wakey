@@ -1,7 +1,7 @@
 import { WebSocketServer, WebSocket } from "ws";
 import { prismaClient } from "@repo/db/client";
 import type { Validator, User } from "./types";
-import { sendFailureMail } from "./utils/mail";
+import { sendFailureMail, sendLatencyAlertMail } from "./utils/mail";
 
 const validators: { [id: string]: WebSocket } = {};
 const websiteQueue: { websiteId: string; url: string }[] = [];
@@ -90,6 +90,14 @@ wss.on("connection", (ws, req) => {
             });
             if (user && validator) {
               sendFailureMail(user.email, website.url, validator.location);
+            }
+            if (latency < website.latencyAlert) {
+              sendLatencyAlertMail(
+                user?.email as string,
+                website.url,
+                latency,
+                website.latencyAlert
+              );
             }
           }
         }

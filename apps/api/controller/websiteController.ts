@@ -10,7 +10,7 @@ export const createWebsite = async (req: Request, res: Response) => {
       });
       return;
     }
-    const { url } = req.body;
+    const { url, latencyAlert } = req.body;
     if (!url) {
       res.status(400).json({
         message: "Url is required",
@@ -22,6 +22,7 @@ export const createWebsite = async (req: Request, res: Response) => {
       data: {
         url,
         userId,
+        latencyAlert,
       },
     });
     console.log(website);

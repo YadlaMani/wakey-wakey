@@ -116,13 +116,14 @@ export default function Dashboard() {
   const { websites, error, loading, fetchWebsites } = useWebsites();
   const [newWebsiteUrl, setNewWebsiteUrl] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [latencyAlert, setLatencyAlert] = useState(0);
   const { getToken } = useAuth();
 
   async function handleNewWebsite(newWebsiteUrl: string) {
     const token = await getToken();
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_API_URL}/api/v1/website/create`,
-      { url: newWebsiteUrl },
+      { url: newWebsiteUrl, latencyAlert },
       { headers: { Authorization: `Bearer ${token}` } }
     );
     if (response.data.success) {
@@ -190,6 +191,14 @@ export default function Dashboard() {
                   placeholder="https://example.com"
                   value={newWebsiteUrl}
                   onChange={(e) => setNewWebsiteUrl(e.target.value)}
+                />
+              </div>
+              <div>
+                <Input
+                  type="number"
+                  placeholder="Latency Alert"
+                  value={latencyAlert}
+                  onChange={(e) => setLatencyAlert(Number(e.target.value))}
                 />
               </div>
               <DialogFooter>
