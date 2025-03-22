@@ -32,6 +32,7 @@ model Validator{
   ip String
   pendingPayouts Int @default(0)
   ticks WebSiteTicks[]
+  history        Json   @default("[]")
 }
 model WebSiteTicks{
   id String @id @default(uuid())

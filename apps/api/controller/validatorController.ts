@@ -68,12 +68,22 @@ export const withdrawAmount = async (req: Request, res: Response) => {
       return;
     }
     const transactionSignature = await sendBalanceToUser(amount, toAddress);
+
+    const transaction = {
+      amount,
+      signature: transactionSignature,
+      timestamp: new Date(),
+    };
+    const updatedHistory = Array.isArray(validator.history)
+      ? [...validator.history, transaction]
+      : [transaction];
     await prismaClient.validator.update({
       where: {
         id: validatorId,
       },
       data: {
         pendingPayouts: 0,
+        history: updatedHistory,
       },
     });
     res.json({
@@ -81,7 +91,8 @@ export const withdrawAmount = async (req: Request, res: Response) => {
       message: `Balance of ${amount} SOL deposited successfully`,
       signauture: transactionSignature,
     });
-  } catch {
+  } catch (err) {
+    console.log(err);
     res.json({
       success: false,
       message: "Internal server error",
