@@ -85,6 +85,11 @@ interface Website {
 
 const COLORS = ["#10B981", "#F43F5E", "#F59E0B"];
 
+// Utility function to check if a date is valid
+function isValidDate(date: any): boolean {
+  return date instanceof Date && !isNaN(date.getTime());
+}
+
 const Page = () => {
   const params = useParams();
   const websiteId = params?.id;
@@ -141,14 +146,18 @@ const Page = () => {
     .slice(0, 10)
     .reverse()
     .map((tick) => ({
-      time: format(new Date(tick.createdAt), "HH:mm:ss"),
+      time: isValidDate(new Date(tick.createdAt))
+        ? format(new Date(tick.createdAt), "HH:mm:ss")
+        : "N/A",
       latency: tick.latency,
       status: tick.status,
     }));
 
   const last24Hours = subHours(new Date(), 24);
   const ticksLast24h = ticks.filter(
-    (tick) => new Date(tick.createdAt) > last24Hours
+    (tick) =>
+      isValidDate(new Date(tick.createdAt)) &&
+      new Date(tick.createdAt) > last24Hours
   );
   const uptime = (
     (ticksLast24h.filter((tick) => tick.status === "GOOD").length /
@@ -305,10 +314,12 @@ const Page = () => {
               <div className="flex items-center gap-2">
                 <span className="text-xs text-muted-foreground">
                   Last:{" "}
-                  {format(
-                    new Date(validator?.history[0]?.timestamp || ""),
-                    "MMM d, HH:mm"
-                  )}
+                  {validator?.history[0]?.timestamp
+                    ? format(
+                        new Date(validator.history[0].timestamp),
+                        "MMM d, HH:mm"
+                      )
+                    : "N/A"}
                 </span>
               </div>
             </CardContent>
@@ -445,10 +456,12 @@ const Page = () => {
                         )}
                         <div>
                           <p className="font-medium">
-                            {format(
-                              new Date(tick.createdAt),
-                              "MMM d, HH:mm:ss"
-                            )}
+                            {isValidDate(new Date(tick.createdAt))
+                              ? format(
+                                  new Date(tick.createdAt),
+                                  "MMM d, HH:mm:ss"
+                                )
+                              : "N/A"}
                           </p>
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <span>Latency: {tick.latency}ms</span>
@@ -512,10 +525,12 @@ const Page = () => {
                           <div>
                             <p className="font-medium">High Latency Detected</p>
                             <p className="text-sm text-muted-foreground">
-                              {format(
-                                new Date(incident.createdAt),
-                                "MMM d, HH:mm:ss"
-                              )}
+                              {isValidDate(new Date(incident.createdAt))
+                                ? format(
+                                    new Date(incident.createdAt),
+                                    "MMM d, HH:mm:ss"
+                                  )
+                                : "N/A"}
                             </p>
                           </div>
                           <Badge variant="destructive">
@@ -561,14 +576,21 @@ const Page = () => {
                             </p>
                             <p className="text-sm text-muted-foreground">
                               From:{" "}
-                              {format(
-                                new Date(period.start),
-                                "MMM d, HH:mm:ss"
-                              )}
+                              {isValidDate(new Date(period.start))
+                                ? format(
+                                    new Date(period.start),
+                                    "MMM d, HH:mm:ss"
+                                  )
+                                : "N/A"}
                             </p>
                             <p className="text-sm text-muted-foreground">
                               To:{" "}
-                              {format(new Date(period.end), "MMM d, HH:mm:ss")}
+                              {isValidDate(new Date(period.end))
+                                ? format(
+                                    new Date(period.end),
+                                    "MMM d, HH:mm:ss"
+                                  )
+                                : "N/A"}
                             </p>
                           </div>
                           <Badge variant="secondary">
