@@ -8,7 +8,6 @@ import { toast } from "sonner";
 ``;
 import { useAuth } from "@clerk/nextjs";
 import { jsPDF } from "jspdf";
-import autoTable from "jspdf-autotable";
 
 import {
   Card,
@@ -20,14 +19,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Activity,
-  Globe,
-  Clock,
   Zap,
   CheckCircle,
   XCircle,
-  TrendingUp,
-  AlertTriangle,
   Shield,
   Timer,
   Signal,
@@ -37,10 +31,6 @@ import {
 import {
   LineChart,
   Line,
-  AreaChart,
-  Area,
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -50,12 +40,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import {
-  format,
-  subHours,
-  differenceInMinutes,
-  formatDistanceToNow,
-} from "date-fns";
+import { format, subHours, differenceInMinutes } from "date-fns";
 
 interface Validator {
   id: string;
