@@ -76,10 +76,10 @@ wss.on("connection", (ws, req) => {
         distributeWebsites();
       } else if (data.type === "validation_result") {
         const { websiteId, status, latency } = data;
+        const website = await prismaClient.website.findUnique({
+          where: { id: websiteId },
+        });
         if (status === "BAD") {
-          const website = await prismaClient.website.findUnique({
-            where: { id: websiteId },
-          });
           if (website) {
             const user = await prismaClient.user.findUnique({
               where: { id: website.userId },
@@ -91,14 +91,20 @@ wss.on("connection", (ws, req) => {
             if (user && validator) {
               sendFailureMail(user.email, website.url, validator.location);
             }
-            if (latency < website.latencyAlert) {
-              sendLatencyAlertMail(
-                user?.email as string,
-                website.url,
-                latency,
-                website.latencyAlert
-              );
-            }
+          }
+        }
+        if (website) {
+          const user = await prismaClient.user.findUnique({
+            where: { id: website.userId },
+            select: { email: true },
+          });
+          if (latency < website.latencyAlert) {
+            sendLatencyAlertMail(
+              user?.email as string,
+              website.url,
+              latency,
+              website.latencyAlert
+            );
           }
         }
 

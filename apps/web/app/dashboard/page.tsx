@@ -229,36 +229,30 @@ export default function Dashboard() {
             const lastTick = website.ticks[website.ticks.length - 1];
             const uptime = calculateUptime(website.ticks);
             const latencyTrend = getLatencyTrend(website.ticks);
-            const validator = getValidatorInfo(website.ticks);
 
             return (
-              <Card key={website.id} className="p-0">
+              <Card key={website.id} className="p-0 overflow-hidden">
                 <Accordion type="single" collapsible>
                   <AccordionItem value={website.id}>
-                    <AccordionTrigger className="px-6 py-4">
+                    <AccordionTrigger className="px-6 py-4 flex items-center justify-between">
                       <div className="flex items-center space-x-4 w-full">
                         <div
-                          className={`h-3 w-3 rounded-full ${
-                            currentStatus === "GOOD"
-                              ? "bg-green-500"
-                              : "bg-red-500"
-                          }`}
+                          className={`h-3 w-3 rounded-full ${currentStatus === "GOOD" ? "bg-green-500" : "bg-red-500"}`}
                         />
-                        <h2 className="text-lg font-medium">{website.url}</h2>
+                        <h2 className="text-lg font-medium truncate w-40">
+                          {website.url}
+                        </h2>
                         <a
                           href={website.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="hover:text-primary"
                         >
                           <ExternalLink className="h-4 w-4 text-muted-foreground" />
                         </a>
-                        <p className="text-sm font-medium">
-                          {currentStatus === "GOOD" ? (
-                            <span className="text-green-500">Operational</span>
-                          ) : (
-                            <span className="text-red-500">Down</span>
-                          )}
+                        <p
+                          className={`text-sm font-medium ${currentStatus === "GOOD" ? "text-green-500" : "text-red-500"}`}
+                        >
+                          {currentStatus === "GOOD" ? "Operational" : "Down"}
                         </p>
                         <div className="flex items-center space-x-2">
                           <Clock className="h-4 w-4 text-muted-foreground" />
@@ -266,9 +260,7 @@ export default function Dashboard() {
                             {lastTick
                               ? formatDistanceToNow(
                                   new Date(lastTick.createdAt),
-                                  {
-                                    addSuffix: true,
-                                  }
+                                  { addSuffix: true }
                                 )
                               : "Never"}
                           </p>
@@ -277,11 +269,10 @@ export default function Dashboard() {
                     </AccordionTrigger>
                     <AccordionContent>
                       <div className="px-6 pb-6">
-                        <div className="grid grid-cols-3 gap-4 mb-6">
+                        <div className="grid grid-cols-3 gap-6 mb-6">
                           <div>
-                            <h3 className="font-medium flex items-center">
-                              <Activity className="h-4 w-4 mr-2" />
-                              Uptime
+                            <h3 className="font-medium flex items-center mb-1">
+                              <Activity className="h-4 w-4 mr-2" /> Uptime
                             </h3>
                             <p className="text-2xl font-bold">{uptime}%</p>
                             <p className="text-sm text-muted-foreground">
@@ -289,7 +280,7 @@ export default function Dashboard() {
                             </p>
                           </div>
                           <div>
-                            <h3 className="font-medium">Response Time</h3>
+                            <h3 className="font-medium mb-1">Response Time</h3>
                             <p className="text-2xl font-bold">
                               {currentStatus === "GOOD"
                                 ? `${avgLatency}ms`
@@ -311,13 +302,12 @@ export default function Dashboard() {
                             </p>
                           </div>
                           <div>
-                            <h3 className="font-medium flex items-center">
-                              <Server className="h-4 w-4 mr-2" />
-                              Last Validator
+                            <h3 className="font-medium flex items-center mb-1">
+                              <Server className="h-4 w-4 mr-2" /> Last Validator
                             </h3>
                             {website.lastValidator ? (
                               <>
-                                <p className="text-sm mt-1">
+                                <p className="text-sm">
                                   {website.lastValidator.location || "Unknown"}
                                 </p>
                                 <p className="text-xs text-muted-foreground">
@@ -330,35 +320,32 @@ export default function Dashboard() {
                               </p>
                             )}
                           </div>
-                          <Button>
+                        </div>
+                        <div className="flex space-x-4">
+                          <Button asChild variant="outline">
                             <Link href={`/dashboard/${website.id}`}>
-                              View more Details
+                              View Details
                             </Link>
                           </Button>
                           <Button
+                            variant={
+                              website.disabled ? "default" : "destructive"
+                            }
                             onClick={() => toogleWebsiteStatus(website.id)}
                           >
-                            <p
-                              className={`${!website.disabled ? "text-red-500" : ""}`}
-                            >
-                              {website.disabled
-                                ? "Enable Monitoring"
-                                : "Disable Monitoring"}
-                            </p>
+                            {website.disabled
+                              ? "Enable Monitoring"
+                              : "Disable Monitoring"}
                           </Button>
                         </div>
-                        <h3 className="font-medium mb-2">24-Hour History</h3>
+                        <h3 className="font-medium mt-6 mb-2">
+                          24-Hour History
+                        </h3>
                         <div className="flex space-x-1">
                           {timeFrames.map((status, index) => (
                             <div
                               key={index}
-                              className={`h-8 w-4 rounded ${
-                                status === "GOOD"
-                                  ? "bg-green-500"
-                                  : status === "BAD"
-                                    ? "bg-red-500"
-                                    : "bg-gray-400"
-                              }`}
+                              className={`h-8 w-4 rounded ${status === "GOOD" ? "bg-green-500" : status === "BAD" ? "bg-red-500" : "bg-gray-400"}`}
                             />
                           ))}
                         </div>
