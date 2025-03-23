@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { format, subDays, formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import { useAuth } from "@clerk/nextjs";
 import Link from "next/link";
@@ -28,14 +28,14 @@ import { useWebsites } from "@/hooks/useWebsites";
 import axios from "axios";
 import { Spinner } from "@/components/ui/spinner";
 
-function calculateUptime(ticks: any[]) {
+function calculateUptime(ticks: WebsiteTick[]) {
   if (!ticks.length) return 100;
   const totalTicks = ticks.length;
   const goodTicks = ticks.filter((tick) => tick.status === "GOOD").length;
   return Math.round((goodTicks / totalTicks) * 100);
 }
 
-function getTimeFrames(ticks: any[]) {
+function getTimeFrames(ticks: WebsiteTick[]) {
   const frames = Array(24).fill("GRAY");
   const lastTicks = ticks.slice(-24).reverse();
   lastTicks.forEach((tick, index) => {
@@ -65,20 +65,20 @@ interface WebsiteTick {
   latency: number;
   validator: Validator;
 }
-interface UseWebsitesReturn {
-  websites: Website[];
-  error: string | null;
-  loading: boolean;
-  fetchWebsites: () => void;
-  lastValidator: Validator | null;
-}
-function getLatestStatus(ticks: any[]) {
+// interface UseWebsitesReturn {
+//   websites: Website[];
+//   error: string | null;
+//   loading: boolean;
+//   fetchWebsites: () => void;
+//   lastValidator: Validator | null;
+// }
+function getLatestStatus(ticks: WebsiteTick[]) {
   if (!ticks.length) return "GOOD";
   const latestTick = ticks[ticks.length - 1];
   return latestTick.status;
 }
 
-function getAverageLatency(ticks: any[]) {
+function getAverageLatency(ticks: WebsiteTick[]) {
   if (!ticks.length) return 0;
   const validTicks = ticks.filter((tick) => tick.status === "GOOD");
   if (!validTicks.length) return 0;
@@ -87,7 +87,7 @@ function getAverageLatency(ticks: any[]) {
   );
 }
 
-function getLatencyTrend(ticks: any[]) {
+function getLatencyTrend(ticks: WebsiteTick[]) {
   const lastTicks = ticks.slice(-5);
   if (lastTicks.length < 2) return "stable";
 
@@ -99,11 +99,11 @@ function getLatencyTrend(ticks: any[]) {
   return "stable";
 }
 
-function getValidatorInfo(ticks: any[]) {
-  if (!ticks.length) return null;
-  const latestTick = ticks[ticks.length - 1];
-  return latestTick.validator;
-}
+// function getValidatorInfo(ticks: WebsiteTick[]) {
+//   if (!ticks.length) return null;
+//   const latestTick = ticks[ticks.length - 1];
+//   return latestTick.validator;
+// }
 interface Validator {
   id: string;
   publicKey: string;
@@ -147,6 +147,7 @@ export default function Dashboard() {
       }
     } catch (err) {
       toast.error("Something went wrong while toggling website status");
+      console.log(err);
     } finally {
       fetchWebsites();
     }

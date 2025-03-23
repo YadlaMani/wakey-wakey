@@ -6,7 +6,7 @@ import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import axios from "axios";
 import { toast } from "sonner";
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { Loader2 } from "lucide-react";
@@ -92,6 +92,7 @@ const Page: React.FC = () => {
 
     try {
       setIsLoading(true);
+      console.log(isLoading);
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/v1/validator`,
         {
@@ -161,6 +162,7 @@ const Page: React.FC = () => {
             method: "GET",
             mode: "no-cors",
           });
+          console.log(response);
 
           const latency = Date.now() - start;
 
@@ -181,6 +183,7 @@ const Page: React.FC = () => {
               latency: 9999,
             })
           );
+          console.log(error);
         }
       }
     };
@@ -339,69 +342,82 @@ const Page: React.FC = () => {
             </CardHeader>
             <CardContent className="p-4 md:p-6 space-y-4">
               {validator?.history && validator.history.length > 0 ? (
-                validator.history.map((transaction: any, index: number) => (
-                  <div
-                    key={index}
-                    className="w-full  rounded-lg shadow-md p-4 border  hover:border-gray-600"
-                  >
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          <span className="font-semibold text-white">
-                            Amount:
-                          </span>
-                          <span className="text-emerald-400 font-mono">
-                            {transaction.amount} BTC
+                validator.history.map(
+                  (
+                    transaction: {
+                      amount: number;
+                      timestamp: string;
+                      signature: string;
+                    },
+                    index: number
+                  ) => (
+                    <div
+                      key={index}
+                      className="w-full  rounded-lg shadow-md p-4 border  hover:border-gray-600"
+                    >
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <span className="font-semibold text-white">
+                              Amount:
+                            </span>
+                            <span className="text-emerald-400 font-mono">
+                              {transaction.amount} BTC
+                            </span>
+                          </div>
+                          <span className="text-xs text-gray-400 hidden sm:inline">
+                            {new Date(
+                              transaction.timestamp
+                            ).toLocaleDateString()}{" "}
+                            at{" "}
+                            {new Date(
+                              transaction.timestamp
+                            ).toLocaleTimeString()}
                           </span>
                         </div>
-                        <span className="text-xs text-gray-400 hidden sm:inline">
+
+                        <div className="relative">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-semibold text-white">
+                              Signature:
+                            </span>
+                            <div className="flex items-center space-x-2">
+                              <button
+                                onClick={() =>
+                                  navigator.clipboard.writeText(
+                                    transaction.signature
+                                  )
+                                }
+                                className="p-1 rounded-md hover:bg-gray-700 transition-colors"
+                                title="Copy signature"
+                              >
+                                <Copy className="h-4 w-4 text-gray-400 hover:text-white" />
+                              </button>
+                              <a
+                                href={`https://explorer.solana.com/tx/${transaction.signature}?cluster=devnet`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-1 rounded-md hover:bg-gray-700 transition-colors"
+                                title="View on Solana Explorer"
+                              >
+                                <ExternalLink className="h-4 w-4 text-gray-400 hover:text-white" />
+                              </a>
+                            </div>
+                          </div>
+                          <div className="font-mono text-xs sm:text-sm p-2 rounded-md overflow-x-auto whitespace-nowrap">
+                            {transaction.signature}
+                          </div>
+                        </div>
+
+                        <div className="text-sm text-gray-400 sm:hidden">
                           {new Date(transaction.timestamp).toLocaleDateString()}{" "}
                           at{" "}
                           {new Date(transaction.timestamp).toLocaleTimeString()}
-                        </span>
-                      </div>
-
-                      <div className="relative">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="font-semibold text-white">
-                            Signature:
-                          </span>
-                          <div className="flex items-center space-x-2">
-                            <button
-                              onClick={() =>
-                                navigator.clipboard.writeText(
-                                  transaction.signature
-                                )
-                              }
-                              className="p-1 rounded-md hover:bg-gray-700 transition-colors"
-                              title="Copy signature"
-                            >
-                              <Copy className="h-4 w-4 text-gray-400 hover:text-white" />
-                            </button>
-                            <a
-                              href={`https://explorer.solana.com/tx/${transaction.signature}?cluster=devnet`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="p-1 rounded-md hover:bg-gray-700 transition-colors"
-                              title="View on Solana Explorer"
-                            >
-                              <ExternalLink className="h-4 w-4 text-gray-400 hover:text-white" />
-                            </a>
-                          </div>
                         </div>
-                        <div className="font-mono text-xs sm:text-sm p-2 rounded-md overflow-x-auto whitespace-nowrap">
-                          {transaction.signature}
-                        </div>
-                      </div>
-
-                      <div className="text-sm text-gray-400 sm:hidden">
-                        {new Date(transaction.timestamp).toLocaleDateString()}{" "}
-                        at{" "}
-                        {new Date(transaction.timestamp).toLocaleTimeString()}
                       </div>
                     </div>
-                  </div>
-                ))
+                  )
+                )
               ) : (
                 <div className="text-center py-8 text-gray-400">
                   <InboxIcon className="h-12 w-12 mx-auto mb-3 text-gray-600" />

@@ -15,7 +15,7 @@ export default function AppWalletProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const network = WalletAdapterNetwork.Devnet;
+  // const network = WalletAdapterNetwork.Devnet;
 
   return (
     <ConnectionProvider endpoint={"https://api.devnet.solana.com"}>
