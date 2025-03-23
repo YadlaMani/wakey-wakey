@@ -338,7 +338,13 @@ export default function Dashboard() {
                           <Button
                             onClick={() => toogleWebsiteStatus(website.id)}
                           >
-                            {website.disabled ? "Enable" : "Disable"}
+                            <p
+                              className={`${!website.disabled ? "text-red-500" : ""}`}
+                            >
+                              {website.disabled
+                                ? "Enable Monitoring"
+                                : "Disable Monitoring"}
+                            </p>
                           </Button>
                         </div>
                         <h3 className="font-medium mb-2">24-Hour History</h3>

@@ -39,6 +39,9 @@ export function Appbar() {
             <Button>Get Started</Button>
           </SignUpButton>
         </SignedOut>
+        <Link href="/trending" className="text-lg font-semibold">
+          Trending
+        </Link>
 
         <SignedIn>
           <SyncUser />
