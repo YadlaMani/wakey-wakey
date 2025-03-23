@@ -10,7 +10,7 @@ const NotFound = () => {
         Oops! The page you are looking for was not found.
       </h2>
       <p className="text-gray-500">
-        It may have been moved or doesn’t exist anymore.
+        It may have been moved or doesnt exist anymore.
       </p>
       <Link href="/home">
         <Button>Go to Home</Button>
