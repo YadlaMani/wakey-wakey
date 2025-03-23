@@ -50,14 +50,14 @@ interface Validator {
   ip: string;
   pendingPayouts: number;
 }
-interface Website {
-  id: string;
-  url: string;
-  ticks: WebsiteTick[];
-  validators: Validator[];
-  name: string;
-  disabled: boolean;
-}
+// interface Website {
+//   id: string;
+//   url: string;
+//   ticks: WebsiteTick[];
+//   validators: Validator[];
+//   name: string;
+//   disabled: boolean;
+// }
 interface WebsiteTick {
   id: string;
   createdAt: string;
