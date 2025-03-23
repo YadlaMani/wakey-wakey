@@ -75,7 +75,7 @@ interface Website {
 
 const COLORS = ["#10B981", "#F43F5E", "#F59E0B"];
 
-function isValidDate(date: any): boolean {
+function isValidDate(date: Date): boolean {
   return date instanceof Date && !isNaN(date.getTime());
 }
 
