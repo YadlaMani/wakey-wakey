@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import Image from "next/image";
 
 import {
   Globe2,
@@ -36,7 +37,7 @@ export default function Index() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       {/* Header */}
 
       {/* Hero Section */}
@@ -219,30 +220,40 @@ export default function Index() {
 
           {/* Company Logos */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8 items-center justify-items-center mb-16">
-            <img
+            <Image
               src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg"
               alt="Vercel"
               className="opacity-70 hover:opacity-100 transition-opacity h-8 md:h-12"
+              height={64}
+              width={64}
             />
-            <img
+            <Image
               src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/prisma/prisma-original.svg"
               alt="Prisma"
               className="opacity-70 hover:opacity-100 transition-opacity h-8 md:h-12"
+              height={64}
+              width={64}
             />
-            <img
+            <Image
               src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/solidity/solidity-original.svg"
               alt="Solidity"
               className="opacity-70 hover:opacity-100 transition-opacity h-8 md:h-12"
+              height={64}
+              width={64}
             />
-            <img
+            <Image
               src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/bun/bun-original.svg"
               alt="Bun"
               className="opacity-70 hover:opacity-100 transition-opacity h-8 md:h-12"
+              height={64}
+              width={64}
             />
-            <img
+            <Image
               src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg"
               alt="PostgreSQL"
               className="opacity-70 hover:opacity-100 transition-opacity h-8 md:h-12"
+              height={64}
+              width={64}
             />
           </div>
 

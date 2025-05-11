@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import {
   Zap,
   CheckCircle,
@@ -426,7 +427,7 @@ const Page = () => {
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="time" />
                       <YAxis />
-                      <Tooltip />
+
                       <Line
                         type="monotone"
                         dataKey="latency"

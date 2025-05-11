@@ -362,7 +362,7 @@ const Page: React.FC = () => {
                               Amount:
                             </span>
                             <span className="text-emerald-400 font-mono">
-                              {transaction.amount} BTC
+                              {transaction.amount} SOL
                             </span>
                           </div>
                           <span className="text-xs text-gray-400 hidden sm:inline">

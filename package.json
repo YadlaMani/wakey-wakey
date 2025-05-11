@@ -23,6 +23,7 @@
   ],
   "dependencies": {
     "@clerk/edge": "^1.13.2",
+    "@clerk/nextjs": "^6.12.8",
     "@prisma/client": "^6.5.0",
     "@radix-ui/react-toast": "^1.2.6",
     "@solana-developers/helpers": "^2.8.1",

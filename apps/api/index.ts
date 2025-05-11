@@ -9,8 +9,8 @@ import { authMiddleware } from "./middleware/auth";
 const app = express();
 app.use(express.json());
 app.use(cors());
-const port = process.env.PORT || 5555;
-app.listen(port, () => {
+const port = parseInt(process.env.PORT!) || 5555;
+app.listen(port, "0.0.0.0", () => {
   console.log("Server is running on port 5555");
 });
 app.get("/", (req, res) => {

@@ -41,7 +41,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <ClerkProvider>
-              <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-background">
+              <div className="bg-background">
                 <Appbar />
                 {children}
                 <Toaster />
